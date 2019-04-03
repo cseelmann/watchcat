@@ -16,12 +16,13 @@ for pid in $(pidof -x $script); do
     fi
 done
 
+declare -i away_counter=0
+
 while true; do
         echo "Probing host: $host on port $port..."
         [[ `nc -w 2 -zv $host $port 2>&1 |grep -c succeeded` -eq 0 ]] && echo "Host is down" && away_counter=$((away_counter+1))
-        echo $away_counter
         sleep $interval
-        if [ $away_counter -eq $timeouts ]; then
+        if [ $away_counter == $timeouts ]; then
                 echo "Rebooting..."
                 sudo /sbin/reboot
                 exit 1
